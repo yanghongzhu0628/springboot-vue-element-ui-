@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据管理系统</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="element.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div style="width: 80%; margin: 0 auto" >
+    <h2>数据管理系统</h2>
+</div>
+<div id="app1" style="width: 80%; margin: 0 auto">
+    <h3>学生信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--学生-->
+        <el-table
+                :data="page.content"
+                stripe
+                border
+                style="width: 100%">
+            <el-table-column
+                    prop="student_name"
+                    label="学生姓名">
+            </el-table-column>
+            <el-table-column
+                    prop="student_id"
+                    label="学号"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="sex"
+                    label="性别">
+            </el-table-column>
+            <el-table-column
+                    prop="room_id"
+                    label="房间号">
+            </el-table-column>
+            <el-table-column
+                    fixed="right"
+                    label="操作"
+                    width="100">
+                <template slot-scope="scope">
+                    <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                    <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.student_id)"></el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-row type="flex" justify="center" style="margin-top: 10px">
+            <el-pagination
+                    layout="prev, pager, next"
+                    :page-size="pageSize"
+                    :current-page="pageNum"
+                    @prev-click="loadTable"
+                    @current-change="loadTable"
+                    @next-click="loadTable"
+                    :total="page.totalElements">
+            </el-pagination>
+        </el-row>
+
+        <el-dialog
+                title="学生信息"
+                :visible.sync="dialogVisible"
+                width="30%">
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="学生姓名">
+                    <el-input v-model="form.student_name"></el-input>
+                </el-form-item>
+                <el-form-item label="学号">
+                    <el-input v-model="form.student_id"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-radio v-model="form.sex" label="男">男</el-radio>
+                    <el-radio v-model="form.sex" label="女">女</el-radio>
+                </el-form-item>
+                <el-form-item label="房间号">
+                    <el-input v-model="form.room_id"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+        </el-dialog>
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="student_id"
+                label="学号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="student_name"
+                label="姓名"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="sex"
+                label="性别">
+        </el-table-column>
+                 <el-table-column
+                     prop="room_id"
+                     label="房间号">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    </el-row>
+</div>
+<div id="app2" style="width: 80%; margin: 0 auto">
+    <h3>公寓信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--公寓-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="apartment_id"
+                label="公寓号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="address"
+                label="地址"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="room_number"
+                label="房间数">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.apartment_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="公寓信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="公寓号">
+                <el-input v-model="form.apartment_id"></el-input>
+            </el-form-item>
+            <el-form-item label="地址">
+                <el-input v-model="form.address"></el-input>
+            </el-form-item>
+            <el-form-item label="房间数">
+                <el-input v-model="form.room_number"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="apartment_id"
+                label="公寓号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="address"
+                label="地址"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="room_number"
+                label="房间数">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    </el-row>
+</div>
+<div id="app3" style="width: 80%; margin: 0 auto">
+    <h3>书籍信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--书籍-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="book_id"
+                label="书籍编号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="book_name"
+                label="书名"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="r_room_id"
+                label="阅览室号">
+        </el-table-column>
+        <el-table-column
+                prop="list_id"
+                label="书目号">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.book_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="书籍信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="书籍编号">
+                <el-input v-model="form.book_id"></el-input>
+            </el-form-item>
+            <el-form-item label="书名">
+                <el-input v-model="form.book_name"></el-input>
+            </el-form-item>
+            <el-form-item label="阅览室号">
+                <el-input v-model="form.r_room_id"></el-input>
+            </el-form-item>
+            <el-form-item label="书目号">
+                <el-input v-model="form.list_id"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="book_id"
+                label="书籍号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="book_name"
+                label="书名"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="r_room_id"
+                label="阅览室号">
+        </el-table-column>
+                 <el-table-column
+                         prop="list_id"
+                         label="书目号">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+    </el-row>
+</div>
+<div id="app4" style="width: 80%; margin: 0 auto">
+    <h3>书目信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--书目-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="list_name"
+                label="书目名"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="list_id"
+                label="书目号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="publisher"
+                label="出版社">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.list_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="书目信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="书目编号">
+                <el-input v-model="form.book_id"></el-input>
+            </el-form-item>
+            <el-form-item label="书目名">
+                <el-input v-model="form.book_name"></el-input>
+            </el-form-item>
+            <el-form-item label="出版社">
+                <el-input v-model="form.r_room_id"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="list_name"
+                label="书目名"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="list_id"
+                label="书目号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="publisher"
+                label="阅览室">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    </el-row>
+</div>
+<div id="app5" style="width: 80%; margin: 0 auto">
+    <h3>课程信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--课程-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="course_name"
+                label="课程名"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="course_id"
+                label="课程号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="list_id"
+                label="书目号">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.course_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="课程信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="课程编号">
+                <el-input v-model="form.course_id"></el-input>
+            </el-form-item>
+            <el-form-item label="课程名">
+                <el-input v-model="form.course_name"></el-input>
+            </el-form-item>
+            <el-form-item label="书目号">
+                <el-input v-model="form.list_id"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="course_name"
+                label="课程名"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="course_id"
+                label="课程号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="list_name"
+                label="书目号">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    </el-row>
+</div>
+<div id="app6" style="width: 80%; margin: 0 auto">
+    <h3>阅览室信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--阅览室-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="r_room_id"
+                label="阅览室号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="floor_id"
+                label="楼层号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.r_room_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="阅览室信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="50px">
+            <el-form-item label="阅览室编号">
+                <el-input v-model="form.r_room_id"></el-input>
+            </el-form-item>
+            <el-form-item label="楼层号">
+                <el-input v-model="form.floor_name"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="r_room_id"
+                label="阅览室号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="floor_id"
+                label="楼层号"
+                width="180">
+        </el-table-column>
+
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    </el-row>
+</div>
+<div id="app7" style="width: 80%; margin: 0 auto">
+    <h3>房间信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--房间-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="room_id"
+                label="房间号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="person_number"
+                label="人数"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="apartment_id"
+                label="公寓号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.room_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="房间信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="50px">
+            <el-form-item label="房间编号">
+                <el-input v-model="form.room_id"></el-input>
+            </el-form-item>
+            <el-form-item label="人数">
+                <el-input v-model="form.person_number"></el-input>
+            </el-form-item>
+            <el-form-item label="公寓号">
+                <el-input v-model="form.apartment_id"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="room_id"
+                label="房间号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="person_number"
+                label="人数"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="apartment_id"
+                label="公寓号">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    </el-row>
+</div>
+<div id="app8" style="width: 80%; margin: 0 auto">
+    <h3>教师信息</h3>
+    <el-row>
+        <el-col :span="6" style="margin-bottom: 10px">
+            <el-button type="primary" @click="add">新增</el-button>
+            <h4>    </h4>
+            <el-input v-model="input0" style="width: 70%" @keyup.enter.native="loadTable(1)"></el-input>
+            <el-button type="primary" @click="select(input0)">查找</el-button>
+        </el-col>
+    </el-row>
+<!--教师-->
+    <el-table
+            :data="page.content"
+            stripe
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="teacher_name"
+                label="教师名"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="teacher_id"
+                label="教师编号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="sex"
+                label="性别"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="course_id"
+                label="课程编号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row)"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small" circle @click="del(scope.row.room_id)"></el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-pagination
+                layout="prev, pager, next"
+                :page-size="pageSize"
+                :current-page="pageNum"
+                @prev-click="loadTable"
+                @current-change="loadTable"
+                @next-click="loadTable"
+                :total="page.totalElements">
+        </el-pagination>
+    </el-row>
+
+    <el-dialog
+            title="教师信息"
+            :visible.sync="dialogVisible"
+            width="30%">
+        <el-form ref="form" :model="form" label-width="50px">
+            <el-form-item label="教师编号">
+                <el-input v-model="form.teacher_id"></el-input>
+            </el-form-item>
+            <el-form-item label="教师名">
+                <el-input v-model="form.teacher_name"></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+                <el-radio v-model="form.sex" label="男">男</el-radio>
+                <el-radio v-model="form.sex" label="女">女</el-radio>
+            </el-form-item>
+            <el-form-item label="课程号">
+                <el-input v-model="form.course_id"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save">确 定</el-button>
+        </span>
+    </el-dialog>
+
+
+    <el-dialog
+            title="查询结果"
+            :visible.sync="dialogVisible0"
+            width="30%"
+            :before-close="handleClose">
+        <span slot="footer" class="dialog-footer">
+             <el-table
+                     :data="myarray"
+                     stripe
+                     border
+                     style="width: 100%">
+        <el-table-column
+                prop="teacher_name"
+                label="教师名"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="teacher_id"
+                label="教师号"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="sex"
+                label="性别">
+        </el-table-column>
+                         <el-table-column
+                                 prop="course_id"
+                                 label="课程号">
+        </el-table-column>
+    </el-table>
+    <el-button @click="dialogVisible0 = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible0 = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    </el-row>
+</div>
+
+<script src="jquery.min.js"></script>
+<script src="vue.js"></script>
+<!-- 引入组件库 -->
+<script src="element.js"></script>
+<script type="module"></script>
+<script>
+    //学生
+    new Vue({
+        el: '#app1',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/student/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/student',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/student',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(student_id) {
+                $.ajax({
+                    url: '/student/' + student_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(student_id) {
+                this.dialogVisible0 = true;
+                $.ajax({
+                    url: '/student/' + student_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+    //公寓
+    new Vue ({
+        el: '#app2',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/apartment/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/apartment',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/apartment',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(apartment_id) {
+                $.ajax({
+                    url: '/apartment/' + apartment_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(apartment_id) {
+                this.dialogVisible0 = true;
+                $.ajax({
+                    url: '/apartment/' + apartment_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+    //书籍
+    new Vue({
+        el: '#app3',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/book/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/book',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/book',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(book_id) {
+                $.ajax({
+                    url: '/book/' + book_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(book_id) {
+                this.dialogVisible0 = true;
+                $.ajax({
+                    url: '/book/' + book_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+
+    //书目
+    new Vue({
+        el: '#app4',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/booklist/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/booklist',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/booklist',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(list_id) {
+                $.ajax({
+                    url: '/booklist/' + list_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(list_id) {
+                this.dialogVisible0= true,
+                $.ajax({
+                    url: '/booklist/' + list_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+    //课程
+    new Vue({
+        el: '#app5',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/course/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/course',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/course',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(course_id) {
+                $.ajax({
+                    url: '/course/' + course_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(course_id) {
+                this.dialogVisible0 = true,
+                $.ajax({
+                    url: '/course/' + course_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+
+    //阅览室
+    new Vue({
+        el: '#app6',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/readingroom/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/readingroom',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/readingroom',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(r_room_id) {
+                $.ajax({
+                    url: '/readingroom/' + r_room_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(r_room_id) {
+                this.dialogVisible0 = true,
+                $.ajax({
+                    url: '/readingroom/' + r_room_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+
+    //房间
+    new Vue({
+        el: '#app7',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/room/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/room',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/room',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(room_id) {
+                $.ajax({
+                    url: '/room/' + room_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(room_id) {
+                this.dialogVisible0 = true,
+                $.ajax({
+                    url: '/room/' + room_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+
+    //教师
+    new Vue({
+        el: '#app8',
+        data: {
+            input0:'',
+            page: {},
+            name: '',
+            pageNum: 1,
+            pageSize: 8,
+            dialogVisible: false,
+            dialogVisible0: false,
+            form: {},
+            myarray: [{}]
+        },
+        created() {
+            this.loadTable(this.pageNum);
+        },
+        methods: {
+            loadTable(num) {
+                this.pageNum = num;
+                $.get("/teacher/page?pageNum=" + this.pageNum + "&pageSize=" + this.pageSize + "&name=" + this.name).then(res => {
+                    this.page = res.data;
+                });
+            },
+            add() {
+                this.dialogVisible = true;
+                this.form = {};
+            },
+            edit(row) {
+                this.form = row;
+                this.dialogVisible = true;
+            },
+            save() {
+                let data = JSON.stringify(this.form);
+                if (this.form.id) {
+                    // 编辑
+                    $.ajax({
+                        url: '/teacher',
+                        type: 'put',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                } else {
+                    // 新增
+                    $.ajax({
+                        url: '/teacher',
+                        type: 'post',
+                        contentType: 'application/json',
+                        data: data
+                    }).then(res => {
+                        this.dialogVisible = false;
+                        this.loadTable(1);
+                    })
+                }
+            },
+            del(teacher_id) {
+                $.ajax({
+                    url: '/teacher/' + teacher_id,
+                    type: 'delete',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.loadTable(1);
+                })
+            },
+            select(teacher_id) {
+                this.dialogVisible0 = true,
+                $.ajax({
+                    url: '/teacher/' + teacher_id,
+                    type: 'get',
+                    contentType: 'application/json'
+                }).then(res => {
+                    this.myarray[0] = res.data[0];
+                })
+            }
+        }
+    })
+    // export default {
+    //     data() {
+    //         return {
+    //             input: ''
+    //         }
+    //     }
+    // }
+
+</script>
+</body>
+</html>
